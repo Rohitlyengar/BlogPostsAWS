@@ -18,6 +18,8 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+console.log(process.env.RDS_HOSTNAME)
+
 
 (async () => {
     try {
