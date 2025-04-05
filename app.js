@@ -3,19 +3,18 @@ const { Pool } = require("pg");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
+require('dotenv').config();
+
 
 const app = express();
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 80
 
 const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    user: process.env.RDS_USERNAME,
+    host: process.env.RDS_HOSTNAME,
+    database: process.env.RDS_DB_NAME,
+    password: process.env.RDS_PASSWORD,
+    port: process.env.RDS_PORT,
     ssl: { rejectUnauthorized: false }
 });
 
