@@ -18,6 +18,8 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+console.log("Connecting to PostgreSQL database at host:", process.env.RDS_HOSTNAME);
+
 
 (async () => {
     try {
