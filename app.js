@@ -56,6 +56,11 @@ app.get("/posts", async (req, res) => {
     }
 });
 
+app.get("/config", (req, res) => {
+    res.json({ host: process.env.RDS_HOSTNAME });
+});
+
+
 app.post("/posts", async (req, res) => {
     const { title, content } = req.body;
     if (!title || !content) return res.status(400).json({ error: "Title and content are required" });
