@@ -57,7 +57,7 @@ app.get("/posts", async (req, res) => {
 });
 
 app.get("/config", (req, res) => {
-    res.json({ host: process.env.RDS_HOSTNAME });
+    res.json({ host: process.env.TEST_VALUE });
 });
 
 
