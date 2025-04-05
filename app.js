@@ -18,9 +18,6 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-console.log("Connecting to PostgreSQL database at host:", process.env.RDS_HOSTNAME);
-
-
 (async () => {
     try {
         const client = await pool.connect();
@@ -55,11 +52,6 @@ app.get("/posts", async (req, res) => {
         console.error("Error fetching posts:", err);
     }
 });
-
-app.get("/config", (req, res) => {
-    res.json({ host: process.env.TEST });
-});
-
 
 app.post("/posts", async (req, res) => {
     const { title, content } = req.body;
