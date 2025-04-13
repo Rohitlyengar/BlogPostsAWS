@@ -6,6 +6,7 @@ require('dotenv').config();
 const getSecret = require("./awsSecrets");
 
 const app = express();
+const PORT = process.env.PORT || 8080;
 let pool;
 
 (async () => {
