@@ -17,7 +17,7 @@ let pool;
             host: secret['RDS_HOSTNAME'],
             database: secret['RDS_DB_NAME'],
             password: secret['RDS_PASSWORD'],
-            port: secret['RDS_POST'],
+            port: secret['RDS_PORT'],
             ssl: { rejectUnauthorized: false },
         });
 
