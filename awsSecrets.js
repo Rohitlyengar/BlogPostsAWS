@@ -1,26 +1,24 @@
-import {
-    SecretsManagerClient,
-    GetSecretValueCommand,
-} from "@aws-sdk/client-secrets-manager";
 
-const secret_name = "secret/phone";
+const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 
-const client = new SecretsManagerClient({
-    region: "us-west-2",
-});
+const getSecret = async (secretName) => {
+    const client = new SecretsManagerClient({ region: "us-west-2" });
 
-let response;
+    try {
+        const command = new GetSecretValueCommand({ SecretId: secretName });
+        const response = await client.send(command);
 
-try {
-    response = await client.send(
-        new GetSecretValueCommand({
-            SecretId: secret_name,
-            VersionStage: "AWSCURRENT",
-        })
-    );
-} catch (error) {
-    console.log(error)
-}
+        if (response.SecretString) {
+            return JSON.parse(response.SecretString);
+        } else if (response.SecretBinary) {
+            const buff = Buffer.from(response.SecretBinary, "base64");
+            return JSON.parse(buff.toString("ascii"));
+        } else {
+            throw new Error("SecretString and SecretBinary are both undefined.");
+        }
+    } catch (error) {
+        console.error("Error retrieving secret:", error);
+    }
+};
 
-module.exports = response.SecretString;
-
+module.exports = getSecret;
