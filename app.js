@@ -2,6 +2,7 @@ const express = require("express");
 const { Pool } = require("pg");
 const bodyParser = require("body-parser");
 const path = require("path");
+const secret = require("./awsSecrets");
 
 require('dotenv').config();
 
@@ -41,6 +42,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.get("/test", (req, res) => {
+    res.json(secret);
 });
 
 app.get("/posts", async (req, res) => {
