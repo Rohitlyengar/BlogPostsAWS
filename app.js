@@ -1,4 +1,3 @@
-//Test Commit 5
 const express = require("express");
 const { Pool } = require("pg");
 const bodyParser = require('body-parser');
