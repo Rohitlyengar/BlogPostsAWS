@@ -7,10 +7,14 @@ const fs = require("fs");
 require("dotenv").config();
 const getSecret = require("./awsSecrets");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 let pool;
+
+// Enable CORS with default configuration (allows requests from all origins)
+app.use(cors());
 
 // Configure multer to use memory storage
 const upload = multer({ storage: multer.memoryStorage() });
