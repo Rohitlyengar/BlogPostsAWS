@@ -26,6 +26,29 @@ const upload = multer({ storage: multer.memoryStorage() });
             allowedHeaders: ['Content-Type', 'Authorization']
         }));
 
+        // Configure multer with increased file size limits
+        const upload = multer({
+            storage: multer.memoryStorage(),
+            limits: { 
+                fileSize: 5 * 1024 * 1024 // 5MB limit (adjust as needed)
+            }
+        });
+        
+        // Multer error handling middleware
+        app.use((err, req, res, next) => {
+            if (err instanceof multer.MulterError) {
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(413).json({ 
+                        error: 'File too large, maximum size is 5MB' 
+                    });
+                }
+                return res.status(400).json({ 
+                    error: `Upload error: ${err.message}` 
+                });
+            }
+            next(err);
+        });
+
 
         // Parse JSON requests
         app.use(bodyParser.json());
