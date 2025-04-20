@@ -83,7 +83,6 @@ const upload = multer({ storage: multer.memoryStorage() });
                     Key: fileName,                     // File name to be stored in the bucket
                     Body: req.file.buffer,             // File content from memory buffer
                     ContentType: req.file.mimetype    // MIME type of the file
-                    //ACL: 'public-read',                // Make object publicly accessible
                 };
         
                 try {
@@ -107,10 +106,14 @@ const upload = multer({ storage: multer.memoryStorage() });
                     post: result.rows[0],
                     imageUrl: uploadedImageUrl || "No image uploaded",
                 });
-            } catch (err) {
-                res.status(500).json({ error: "Internal Server Error" });
-                console.error("Error inserting post:", err);
             }
+        catch (error) {
+            console.error('Error in /posts handler:', error); // Log the full error object
+            // Log specific details if available, e.g., error.message, error.stack
+            console.error('Error Message:', error.message);
+            console.error('Error Stack:', error.stack);
+            res.status(500).json({ message: 'Failed to create post', error: error.message }); // Send an error response
+        }
         });
 
         app.listen(PORT, () => console.log(`Server running on Port: ${PORT}`));
