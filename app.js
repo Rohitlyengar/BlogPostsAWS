@@ -82,8 +82,8 @@ const upload = multer({ storage: multer.memoryStorage() });
                     Bucket: secret["S3_BUCKET_NAME"], // S3 bucket name from environment variables
                     Key: fileName,                     // File name to be stored in the bucket
                     Body: req.file.buffer,             // File content from memory buffer
-                    ContentType: req.file.mimetype,    // MIME type of the file
-                    ACL: 'public-read',                // Make object publicly accessible
+                    ContentType: req.file.mimetype    // MIME type of the file
+                    //ACL: 'public-read',                // Make object publicly accessible
                 };
         
                 try {
