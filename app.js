@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
+
 require("dotenv").config();
 const getSecret = require("./awsSecrets");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
@@ -13,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 let pool;
 
-// Enable CORS with default configuration (allows requests from all origins)
+
 app.use(cors());
 
 // Configure multer to use memory storage
@@ -82,13 +83,15 @@ const upload = multer({ storage: multer.memoryStorage() });
                     Key: fileName,                     // File name to be stored in the bucket
                     Body: req.file.buffer,             // File content from memory buffer
                     ContentType: req.file.mimetype,    // MIME type of the file
+                    ACL: 'public-read',                // Make object publicly accessible
                 };
         
                 try {
                     await s3.send(new PutObjectCommand(uploadParams));
                     uploadedImageUrl = `https://${secret["S3_BUCKET_NAME"]}.s3.${secret["AWS_REGION"]}.amazonaws.com/${fileName}`;
+                    console.log("Successfully uploaded image to S3:", uploadedImageUrl);
                 } catch (err) {
-                    console.error("Error uploading to S3:", err);
+                    console.error("Error uploading to S3:", err, err.stack);
                     return res.status(500).json({ error: "Error uploading image" });
                 }
             }
