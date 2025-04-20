@@ -26,11 +26,24 @@ const upload = multer({ storage: multer.memoryStorage() });
             allowedHeaders: ['Content-Type', 'Authorization']
         }));
 
+        // Import required AWS SDK modules
+        const { S3Client } = require("@aws-sdk/client-s3");
+        const { NodeHttpHandler } = require("@aws-sdk/node-http-handler");
+        
+        // Configure S3 client with extended timeout settings
+        const s3Client = new S3Client({
+            region: process.env.AWS_REGION || 'us-east-1',
+            requestHandler: new NodeHttpHandler({
+                connectionTimeout: 5000, // 5 seconds
+                socketTimeout: 60000,    // 60 seconds for larger uploads
+            })
+        });
+        
         // Configure multer with increased file size limits
         const upload = multer({
             storage: multer.memoryStorage(),
             limits: { 
-                fileSize: 5 * 1024 * 1024 // 5MB limit (adjust as needed)
+                fileSize: 5 * 1024 * 1024
             }
         });
         
@@ -50,8 +63,9 @@ const upload = multer({ storage: multer.memoryStorage() });
         });
 
 
-        // Parse JSON requests
-        app.use(bodyParser.json());
+        // Parse JSON requests with increased limits
+        app.use(bodyParser.json({ limit: '10mb' }));
+        app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
         
         // Serve static files
         app.use(express.static(path.join(__dirname, "public")));
