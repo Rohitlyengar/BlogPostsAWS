@@ -21,7 +21,7 @@ const upload = multer({ storage: multer.memoryStorage() });
     try {
         // Apply CORS middleware first, before any route handlers
         app.use(cors({
-            origin: 'https://experimental-domain.click', // Include https:// and use hyphens if that's your domain
+            origin: 'https://experimental-domain.click/posts', // Include https:// and use hyphens if that's your domain
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization']
         }));
