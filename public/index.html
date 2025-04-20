@@ -9,9 +9,10 @@
 <body>
 <h1>Simple Blogpost</h1>
 
-<form id="postForm">
-    <input type="text" id="title" placeholder="Enter post title" required>
-    <textarea id="content" placeholder="Enter post content" required></textarea>
+<form id="postForm" enctype="multipart/form-data">
+    <input type="text" id="title" name="title" placeholder="Enter post title" required>
+    <textarea id="content" name="content" placeholder="Enter post content" required></textarea>
+    <input type="file" id="image" name="image" accept="image/*">
     <button type="submit">Submit</button>
 </form>
 

@@ -24,13 +24,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     postForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        const title = document.getElementById("title").value;
-        const content = document.getElementById("content").value;
+        const formData = new FormData(postForm);
 
         fetch("/posts", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, content }),
+            body: formData,
         })
             .then((response) => response.json())
             .then(() => {
