@@ -6,6 +6,7 @@ const multer = require("multer");
 const fs = require("fs");
 require("dotenv").config();
 const getSecret = require("./awsSecrets");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -69,7 +70,10 @@ const upload = multer({ storage });
             }
         });
 
-        // Modify the POST endpoint to handle optional image uploads
+        const s3 = new S3Client({ region: secret["AWS_REGION"] });
+
+        const BUCKET_NAME = secret["S3_BUCKET_NAME"];
+
         app.post("/posts", upload.single("image"), async (req, res) => {
             const { title, content } = req.body;
 
@@ -77,14 +81,43 @@ const upload = multer({ storage });
                 return res.status(400).json({ error: "Title and content are required" });
             }
 
+            let uploadedImageUrl = null;
+
+            if (req.file) {
+                // Upload to S3
+                const fileContent = fs.readFileSync(req.file.path);
+                const fileName = `${Date.now()}-${req.file.originalname}`;
+
+                const uploadParams = {
+                    Bucket: secret["S3_BUCKET_NAME"], // S3 bucket name from environment variables
+                    Key: fileName,                     // File name to be stored in the bucket
+                    Body: fileContent,                 // File content from the uploaded file
+                    ContentType: req.file.mimetype,    // MIME type of the file
+                };
+
+                try {
+                    await s3.send(new PutObjectCommand(uploadParams));
+                    uploadedImageUrl = `https://${secret["S3_BUCKET_NAME"]}.s3.${secret["AWS_REGION"]}.amazonaws.com/${fileName}`;
+                } catch (err) {
+                    console.error("Error uploading to S3:", err);
+                    return res.status(500).json({ error: "Error uploading image" });
+                } finally {
+                    // Clean up local file after upload to S3
+                    fs.unlinkSync(req.file.path);
+                }
+            }
+
             try {
                 const query = `
-                INSERT INTO posts (title, content)
-                VALUES ($1, $2) RETURNING *`;
+            INSERT INTO posts (title, content)
+            VALUES ($1, $2) RETURNING *`;
                 const values = [title, content];
                 const result = await pool.query(query, values);
 
-                res.json(result.rows[0]);
+                res.json({
+                    post: result.rows[0],
+                    imageUrl: uploadedImageUrl || "No image uploaded",
+                });
             } catch (err) {
                 res.status(500).json({ error: "Internal Server Error" });
                 console.error("Error inserting post:", err);
